@@ -45,6 +45,7 @@ jobs:
           R CMD check $PKG --no-manual --no-build-vignettes 
         shell: bash
       - name: Archive installation log
+        if: always()
         uses: actions/upload-artifact@v3
         with:
           name: installation-log

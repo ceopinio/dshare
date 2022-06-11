@@ -1,6 +1,7 @@
 #' The 'dshare' package.
 #'
-#' @description A DESCRIPTION OF THE PACKAGE
+#' @description A package to estimate the proportion of voters
+#'   choosing a given party in a given district
 #'
 #' @docType package
 #' @name dshare-package
