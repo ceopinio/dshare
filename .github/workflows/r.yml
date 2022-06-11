@@ -43,3 +43,8 @@ jobs:
           PKG=$(find . -maxdepth 1 -type f -name "dshare*.tar.gz")
           R CMD check $PKG --no-manual --no-build-vignettes 
         shell: bash
+      - name: Archive installation log
+        uses: actions/upload-artifact@v3
+        with:
+          name: installation-log
+          path: D:/a/dshare/dshare/dshare.Rcheck/00install.out
