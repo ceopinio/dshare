@@ -35,7 +35,7 @@ jobs:
           r-version: ${{ matrix.r-version }}
       - name: Install dependencies
         run: |
-          install.packages(c("Rcpp", "RcppParallel", "rstan", "rstantools", "BH", "RcppEigen", "StanHeaders"))
+          install.packages(c("Rcpp", "RcppParallel", "rstan", "rstantools", "BH", "RcppEigen", "StanHeaders", "roxygen2"))
         shell: Rscript {0}
       - name: Check
         run: |
