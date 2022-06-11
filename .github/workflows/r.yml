@@ -39,6 +39,7 @@ jobs:
         shell: Rscript {0}
       - name: Check
         run: |
+          Rscript -e 'roxygen2::roxygenise("dshare")'
           R CMD build dshare
           PKG=$(find . -maxdepth 1 -type f -name "dshare*.tar.gz")
           R CMD check $PKG --no-manual --no-build-vignettes 
