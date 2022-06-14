@@ -1,5 +1,5 @@
 Package: dshare
-Title: What the Package Does (One Line, Title Case)
+Title: Estimation of the proportion of party supporters in a given district
 Version: 0.0.1
 Authors@R: 
     person(given="Gonzalo",
@@ -7,7 +7,11 @@ Authors@R:
     middle=NULL,
     email="me@griverorz.net",
     role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+Description: The package provides a Bayesian model to estimate
+    the proportion of party supporters in a given district. The
+    model is used to improve the estimates of district-level
+    support with small sample sizes when the researcher has
+    sensible priors (like previous electoral results).
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

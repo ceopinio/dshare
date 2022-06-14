@@ -1,38 +1,42 @@
-#' Estimation of vote share at the district level
+#' Estimation of the proportion of cases in a group choosing an item
+#'
+#' Estimates a Bayesian multivariate (several outcomes) regression
+#' (using Stan) to calculate the proportion of cases in a given group
+#' choosing a given item
 #'
 #' @param formula An object of class formula with the choice on the
-#'   LHS and the grouping variable on the RHS
+#'   LHS and the grouping variable on the RHS. Both variables are
+#'   expected to be factors.
 #' @param weights The variable in \code{data} containing the weights
-#' @param data An optional data frame containing the varaibles in the
-#'   model
-#' @param P A table or a matrix with the priors
-#' @param var A variance
+#' @param data An optional data frame containing the variables and
+#'   weights in the model.
+#' @param priors A table or a matrix with the vote share for each
+#'   choice in each group for the model. The names of the first
+#'   dimension (rows) should match the levels of the LHS of the
+#'   formula; and the names of the second dimension (columns), the
+#'   RHS.
+#' @param sd A standard deviation for each the prior
 #' @param ... Arguments passed to `rstan::sampling` (e.g. iter,
 #'   chains).
 #' @return An object of class `stanfit` returned by `rstan::sampling`
 #'
 #' @importFrom stats aggregate model.matrix model.response model.weights
+#'
+#' @details The function passes data to a Stan model that calculates
+#'   the multivariate (i.e., with several outcomes) Bayesian linear
+#'   regression in the formula. The coefficients of the regressors are
+#'   constrained to sum to one. The priors passed by the user (the
+#'   proportion choosing an item in a given group) are transformed
+#'   into a Beta with means \code{priors} and variance \code{sd}.
 #' 
 #' @export
-dshare <- function(formula, data, weights, P, var, ...) {
-
-  if (!inherits(P, "table") & !inherits(P, "matrix")) {
-    stop(sprintf("%s must be a table or a matrix",
-                 sQuote("P")))
-  }
+dshare <- function(formula, data, weights, priors, sd, ...) {
   
-  totals <- as.vector(colSums(P))
-  
-  if (!all.equal(totals, rep(1, length(totals)))) {
-    stop("Priors for each district must add up to 1")
-  }
-  
-  nchoice <- dimnames(P)[[1]]
-  ndistrict <- dimnames(P)[[2]]
-
   mf <- match.call(expand.dots=FALSE)
   m <- match(c("formula", "data", "subset", "weights"), names(mf), 0L)
   mf <- mf[c(1L, m)]
+  variables <- all.vars(mf[[2L]])
+
   mf[[1L]] <- quote(stats::model.frame)
   mf <- eval(mf, parent.frame())
   yres <- model.response(mf)
@@ -40,11 +44,7 @@ dshare <- function(formula, data, weights, P, var, ...) {
   if (!inherits(yres, "factor")) {
     stop("Response variable must be a factor")
   }
-  if (!setequal(levels(yres), nchoice) &
-        any(levels(yres) != nchoice)) {
-    stop("Levels of the response variable do not match the priors")
-  }
-  
+
   y <- model.matrix(~ yres - 1)
   w <- as.vector(model.weights(mf))
   if (!is.null(w) && !is.numeric(w)) {
@@ -59,24 +59,49 @@ dshare <- function(formula, data, weights, P, var, ...) {
   }
 
   if (attr(mt, "dataClasses")[tvar] != "factor") {
-    stop("Response variable must be a factor")
+    stop("Regressor variable must be a factor")
   }
-  if (!setequal(levels(mf[, tvar]), ndistrict) |
-        any(levels(mf[, tvar]) != ndistrict)) {
-    stop("Levels of the response variable do not match the priors")
-  }
+
   mt <- model.matrix(mt, mf)
 
+  ## Priors
+  if (!inherits(priors, "matrix") || !inherits(priors, "array")) {
+    stop(sprintf("%s must be a matrix or a table",
+                 sQuote("priors")))
+  }
+
+  datanames <- dimnames(table(mf[[1]], mf[[2]]))
+  nchoice <- dimnames(priors)[[1]]
+  ndistrict <- dimnames(priors)[[2]]
+
+  if (!isTRUE(all.equal(nchoice, datanames[[1]]))) {
+    stop(sprintf("The levels of %s and first dimension of %s do not match",
+                 sQuote(variables[1]),
+                 sQuote("P")))
+  }
+  if (!isTRUE(all.equal(ndistrict, datanames[[2]]))) {
+    stop(sprintf("The levels of %s and second dimension of %s do not match",
+                 sQuote(variables[2]),
+                 sQuote("P")))
+  }
+
+  totals <- colSums(priors)
+  totals <- as.vector(totals)
+
+  if (!all.equal(totals, rep(1, length(totals)))) {
+    stop("Priors for each district must add up to 1")
+  }
+  
   data <- cbind(weight=w, y, mt) 
   res <- aggregate(weight ~ ., data, sum)
   
-  priors <- dshare:::beta_params(P, var^2)
+  priors <- dshare:::beta_params(P, sd^2)
   alpha <- priors$alpha
   beta <- priors$beta
   
   ## Data object to pass to Stan
-  data <- list(results=res[, grepl(paste(nchoice, collapse="|"), names(res))],
-               dummies=res[, grepl(paste(ndistrict, collapse="|"), names(res))],
+  data <- list(results=res[, grepl(paste("yres", collapse="|"), names(res))],
+               dummies=res[, grepl(paste(variables[2], collapse="|"), names(res))],
                weights=res[, "weight"],
                a=t(alpha), 
                b=t(beta),  
