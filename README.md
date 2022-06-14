@@ -81,12 +81,24 @@ fit <- dshare(intention ~ provincia,
               chains=3)
 ```
 
-The result of the previous call is:
+The result from the model is 
 
 ```r
-pestimates <- rstan::extract(fit)
-pestimates <- apply(pestimates$beta, c(2, 3), mean)
-
+R> pestimates <- rstan::extract(fit) # Extracts samples
+R> pestimates <- apply(pestimates$beta, c(2, 3), mean) # Averages over samples
+R> dimnames(pestimates) <- dimnames(t(cfactors)) # Assigns dim names
+R> t(pestimates)
+                         provincia
+party                     Barcelona Girona Lleida Tarragona
+  PPC                        0.0523 0.0175 0.0358    0.0889
+  ERC                        0.2304 0.2653 0.3020    0.2851
+  PSC                        0.2828 0.1633 0.1734    0.2057
+  Cs                         0.0383 0.0216 0.0266    0.0465
+  CUP                        0.0705 0.1097 0.0753    0.0602
+  Junts.per.Catalunya        0.1319 0.2578 0.2684    0.1638
+  Catalunya.en.Comu.Podem    0.0889 0.0358 0.0256    0.0393
+  Vox                        0.0774 0.0794 0.0550    0.0790
+  Altres.partits             0.0276 0.0496 0.0378    0.0315
 ```
 # Installation
 
