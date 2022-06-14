@@ -1,6 +1,6 @@
 Package: dshare
 Title: Estimation of the proportion of party supporters in a given district
-Version: 0.0.1
+Version: 0.0.2
 Authors@R: 
     person(given="Gonzalo",
     family="Rivero",
