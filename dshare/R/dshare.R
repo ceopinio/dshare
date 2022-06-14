@@ -95,7 +95,7 @@ dshare <- function(formula, data, weights, priors, sd, ...) {
   data <- cbind(weight=w, y, mt) 
   res <- aggregate(weight ~ ., data, sum)
   
-  priors <- dshare:::beta_params(priors, sd^2)
+  priors <- beta_params(priors, sd^2)
   alpha <- priors$alpha
   beta <- priors$beta
   

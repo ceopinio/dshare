@@ -5,7 +5,7 @@
 #'
 #' @docType package
 #' @name dshare-package
-#' @aliases dshare
+#' @aliases dshare-package
 #' @useDynLib dshare, .registration = TRUE
 #' @import methods
 #' @import Rcpp
