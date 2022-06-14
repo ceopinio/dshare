@@ -7,7 +7,7 @@
 #' @param formula An object of class formula with the choice on the
 #'   LHS and the grouping variable on the RHS. Both variables are
 #'   expected to be factors.
-#' @param weights The variable in \code{data} containing the weights
+#' @param weights The variable in \code{data} containing the case weights
 #' @param data An optional data frame containing the variables and
 #'   weights in the model.
 #' @param priors A table or a matrix with the vote share for each
@@ -77,12 +77,12 @@ dshare <- function(formula, data, weights, priors, sd, ...) {
   if (!isTRUE(all.equal(nchoice, datanames[[1]]))) {
     stop(sprintf("The levels of %s and first dimension of %s do not match",
                  sQuote(variables[1]),
-                 sQuote("P")))
+                 sQuote("priors")))
   }
   if (!isTRUE(all.equal(ndistrict, datanames[[2]]))) {
     stop(sprintf("The levels of %s and second dimension of %s do not match",
                  sQuote(variables[2]),
-                 sQuote("P")))
+                 sQuote("priors")))
   }
 
   totals <- colSums(priors)
@@ -95,7 +95,7 @@ dshare <- function(formula, data, weights, priors, sd, ...) {
   data <- cbind(weight=w, y, mt) 
   res <- aggregate(weight ~ ., data, sum)
   
-  priors <- dshare:::beta_params(P, sd^2)
+  priors <- dshare:::beta_params(priors, sd^2)
   alpha <- priors$alpha
   beta <- priors$beta
   
