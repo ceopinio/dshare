@@ -18,7 +18,7 @@ the number of observations in each district is small and the analyst
 has access to sensible priors (like previous electoral results). In
 essence, the model will calculate a weighted average between the
 priors and the observed vote shares in the data -- ensuring that the
-resulting share are valid proportions.
+resulting shares are valid proportions.
 
 # An example 
 
