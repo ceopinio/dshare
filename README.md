@@ -1,5 +1,5 @@
 # The `dshare` R package
-![R CMD check](https://github.com/griverorz/dshare/actions/workflows/r.yml/badge.svg)
+![R CMD check](https://github.com/ceopinio/dshare/actions/workflows/r.yml/badge.svg)
 
 `dshare` is an R package from the Centre d'Estudis d'Opinió to
 estimate vote shares at the district level. 
@@ -107,5 +107,5 @@ GitHub repository directly.
 
 ```R
 install.packages("remotes")
-remotes::install_github("griverorz/dshare", subdir="dshare")
+remotes::install_github("ceopinio/dshare", subdir="dshare")
 ```
